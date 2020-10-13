@@ -1,0 +1,129 @@
+#define BLYNK_PRINT Serial
+#include <ESP8266WiFi.h>
+#include <SPI.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_PCD8544.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+#include "Nokia_5110.h"
+#include <SimpleDHT.h>
+#include <SoftwareSerial.h>
+#include <BlynkSimpleEsp8266.h>
+
+char auth[] = "your blynk auth code";
+char ssid[] = "wifi ssid";
+char pass[] = "password";
+
+int  V66_value,V67_value,V68_value,V69_value;
+
+int D0=16,D1=5,D2=4,D5=14,D6=12,RX=3;
+
+
+
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(D0, OUTPUT);
+  pinMode(D1, OUTPUT);
+  pinMode(D2, OUTPUT);
+  pinMode(D5, OUTPUT);
+  digitalWrite(D0, HIGH);
+  digitalWrite(D1, HIGH);
+  digitalWrite(D2, HIGH);
+  digitalWrite(D5, HIGH);  
+  Blynk.begin(auth, ssid, pass);
+ 
+}
+
+
+
+void loop() {
+  Blynk.run();
+   
+   String status="---------------------\n";
+        
+   if(V66_value==1) {
+      Serial.println("V66 (SOCKET 1) ON");
+        status=status+"     (SOCKET-1) ON    \n";
+      
+      digitalWrite(D2, LOW); 
+      }
+    else{
+      Serial.println("V66 (SOCKET-1) OFF");
+      digitalWrite(D2, HIGH); 
+        status=status+"     (SOCKET-1) OFF    \n";
+      }  
+ 
+    
+       if(V67_value==1) {
+        Serial.println("V67 (SOCKET 2) ON");
+        digitalWrite(D1, LOW); 
+
+        status=status+"     (SOCKET-2) ON    \n";
+       }
+      else{
+        Serial.println("V67 (SOCKET 2) OFF");
+        digitalWrite(D1, HIGH); 
+        status=status+"     (SOCKET-2) OFF   \n";
+      }  
+
+    if(V68_value==1) {
+      Serial.println("V68 (SOCKET-3) ON");
+        digitalWrite(D0, LOW); 
+        status=status+"     (SOCKET-3) ON    \n";
+       }
+      else{
+        Serial.println("V68 (SOCKET-3) OFF");
+        digitalWrite(D0, HIGH); 
+    status=status+"     (SOCKET-3) OFF   \n";
+      } 
+    
+
+    if(V69_value==1) {
+        Serial.println("V69 (SOCKET 4) ON");
+        digitalWrite(D5, LOW); 
+        status=status+"     (SOCKET-4) ON    \n";
+       }
+      else{
+        Serial.println("V69 (SOCKET-4) OFF");
+        digitalWrite(D5, HIGH); 
+        status=status+"     (SOCKET-4) OFF   \n";
+      } 
+
+Blynk.virtualWrite(V60, status);
+Blynk.virtualWrite(V100, status);
+  delay(2000);
+  }
+
+
+  BLYNK_CONNECTED(){
+    Blynk.syncVirtual(V66);
+    Blynk.syncVirtual(V67);
+    Blynk.syncVirtual(V68);
+    Blynk.syncVirtual(V69);
+  }
+  
+
+ BLYNK_WRITE(V66){
+
+      V66_value=param.asInt();
+
+
+  }
+
+  BLYNK_WRITE(V67){
+
+      V67_value=param.asInt();
+
+  }
+BLYNK_WRITE(V68){
+
+      V68_value=param.asInt();
+
+  }
+  BLYNK_WRITE(V69){
+
+      V69_value=param.asInt();
+
+  }
+  
